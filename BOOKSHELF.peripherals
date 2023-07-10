@@ -1,0 +1,212 @@
+#
+# BOOKSHELF.peripherals - Documentation for peripheral modules/chips and other
+# components
+#
+# This work is licensed under Creative Commons CC-BY-4.0, see LICENSE.CC-BY for
+# more information.
+#
+
+#===== M1s Touch Screen =======================================================
+
+# The M1s dock has an optional display module made by Shenzhen P&O Technology
+# Co., Ltd:
+# https://www.polcd.com/sale-26572743-polcd-1-69-inch-240x240-ips-lcd-st7789v-small-lcd-touch-screen-4-line-spi.html
+#
+# It has a Sitronix ST7789V display controller and a Hynitron CST816T touch
+# screen controller. Data sheets for display and controllers can be found in
+# the P169H002-CTP.rar distributed by Sipeed:
+# https://dl.sipeed.com/shareURL/MAIX/M1s/M1s_Dock/6_Chip_Manual/touch_screen
+#
+# Unfortunately, the RAR can not be dowloaded automatically, and some of data
+# sheets are in Chinese. We thus use data sheets from other sources, and in the
+# case of the CST816T, for the hopefully very similar CST816S.
+#
+
+# Sitronix ST7789V
+
+N: ST7789V
+A: st7789v
+A: tft
+D: https://newhavendisplay.com/content/datasheets/ST7789V.pdf
+
+# Hynitron CST816S (version 1.4)
+
+N: CST816S
+A: cst816s
+A: touch
+#D: https://www.buydisplay.com/download/ic/DS-CST816S_DS_V1.3.pdf
+D: https://www.waveshare.com/w/upload/5/51/CST816S_Datasheet_EN.pdf
+
+#===== Microchip ATECC608B ====================================================
+
+N: ATECC608B
+A: atecc608b
+A: mcse
+A: se
+D: https://ww1.microchip.com/downloads/aemDocuments/documents/SCBU/ProductDocuments/DataSheets/ATECC608B-CryptoAuthentication-Device-Summary-Data-Sheet-DS40002239B.pdf
+
+N: AN8971
+A: an8971
+A: auth
+D: https://ww1.microchip.com/downloads/en/Appnotes/Atmel-8863-CryptoAuth-Authentication-Counting-ApplicationNote.pdf
+
+# ATECC508A complete data sheet
+
+N: ATECC508A-CDS
+A: atecc508a-cds
+A: mcsec
+D: https://content.arduino.cc/assets/mkr-microchip_atecc508a_cryptoauthentication_device_summary_datasheet-20005927a.pdf
+
+#===== Bosch BMA400 ===========================================================
+
+# BMA400
+
+N: BMA400
+A: bma400
+A: accel
+D: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bma400-ds000.pdf
+
+# How to generate freefall interrupt using BMA400
+
+N: BMA400-Freefall
+A: fall
+D: https://community.bosch-sensortec.com/varuj77995/attachments/varuj77995/bst_community-mems-forum/4402/1/How%20to%20generate%20freefall%20interrupt%20using%20BMA400.pdf
+
+#===== TI BQ21080 =============================================================
+
+# BQ21080 Linear Battery Charger
+
+N: BQ21080
+A: bq21080
+A: charger
+D: https://www.ti.com/lit/ds/symlink/bq21080.pdf
+
+#===== TI TLV759P =============================================================
+
+# TLV759P Voltage Regulator
+
+N: TLV759P
+A: TLV759
+A: tlv759P
+A: vreg
+A: ldo
+D: https://www.ti.com/lit/ds/symlink/tlv759p.pdf
+
+#===== QSPI Flash =============================================================
+
+# Macronix MX25R6435F QSPI Flash
+
+N: MX25R6435F
+A: mx25r6435f
+A: flash
+A: qspi
+D: https://www.macronix.com/Lists/Datasheet/Attachments/8868/MX25R6435F,%20Wide%20Range,%2064Mb,%20v1.6.pdf
+
+#===== USB-C receptacle =======================================================
+
+# Amphenol 10164986 USB-C Receptacle (mid-mount, full depth)
+
+N: 10164986
+A: usbc
+A: usb
+F: elinks
+D: https://cdn.amphenol-cs.com/media/wysiwyg/files/drawing/10164986.pdf
+
+# Cvilux CU3924SFSFDR003-LF USB-C Receptacle (mid-mount, full depth)
+
+N: CU3924SFSFDR003
+A: usbc-2nd
+A: usb-2nd
+D: https://media.digikey.com/pdf/Data%20Sheets/CUI%20Inc%20All%20Brands%20PDFs/CU39S03SA.pdf
+
+#===== High-side Load Switch ==================================================
+
+# GLF GLF112x (0.35 mm pitch, EN active-high)
+
+N: GLF112x
+A: GLF1121H
+A: GLF1123H
+A: glf1121h
+A: glf1123h
+A: loadsw
+D: https://glfipower.com/component/cck/?task=download&collection=upload_multiple&xi=0&file=upload_document&id=271
+
+# Toshiba TCK127BG (0.35 mm pitch, EN active-high)
+
+N: TCK127BG
+A: tck127bg
+A: loadsw-2nd
+D: https://toshiba.semicon-storage.com/info/docget.jsp?did=140423&prodName=TCK127BG
+#D: https://toshiba.semicon-storage.com/info/TCK127BG_datasheet_en_20211028.pdf
+
+#===== n-FET ==================================================================
+
+# Diodes DMG1012T (n-FET SOT-523)
+
+N: DMG1012T
+A: dmg1012t
+A: n-FET
+A: nfet
+D: https://www.diodes.com/assets/Datasheets/DMG1012T.pdf
+
+#===== FPC connector (0.5 mm, bottom contacts) ================================
+
+# GCT FFC2B35-18-G
+
+N: FFC2B35
+A: fpc
+D: https://gct.co/files/drawings/ffc2b35.pdf
+
+# Hirose FH12 series
+
+N: FH12
+A: fpc-2nd
+D: https://media.digikey.com/pdf/Data%20Sheets/Hirose%20PDFs/FH12.pdf
+
+# Cvilux CF50 series
+N: CF50
+A: fpc-3rd
+D: https://www.cvilux.com/uploads/drawings/101/191/CF5002S.pdf
+
+#===== Tactile switch for power button ========================================
+
+# C&K PTS847 series
+
+N: PTS847
+A: tact
+D: https://staging.ckswitches.com/media/3190/ck_pts847_datasheet.pdf
+
+# Panasonic EVPAE series
+
+N: EVPAE
+A: tact-2nd
+D: https://api.pim.na.industrial.panasonic.com/file_stream/main/fileversion/245507
+
+#===== Op amp =================================================================
+
+# TI TLV521
+
+N: TLV521
+A: opamp
+D: https://ti.com/lit/ds/symlink/tlv521.pdf
+
+# Microchip MCP6441
+
+N: MCP6441
+A: opamp-2nd
+D: https://ww1.microchip.com/downloads/en/DeviceDoc/22257C.pdf
+
+# TI LPV521
+
+N: LPV521
+A: opamp-3rd
+D: https://ti.com/lit/ds/symlink/lpv521.pdf
+
+#===== MicroSD card holder (for R&D) ==========================================
+
+# Amphenol 10067099
+
+N: 10067099
+A: usd
+F: elinks
+D: https://www.amphenol-cs.com/media/wysiwyg/files/drawing/10067099.pdf

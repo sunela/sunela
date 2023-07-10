@@ -1,0 +1,40 @@
+#
+# BOOKSHELF.general - Documentation about standards and protocols
+#
+# This work is licensed under Creative Commons CC-BY-4.0, see LICENSE.CC-BY for
+# more information.
+#
+
+#===== RISV-V =================================================================
+
+# RISC-V ISA: Volume 1, Unprivileged Specification version 20191213
+
+N: RV-ISA-UNPRIV
+A: rvisa
+D: https://github.com/riscv/riscv-isa-manual/releases/download/Ratified-IMAFDQC/riscv-spec-20191213.pdf
+
+# RISC-V ISA: Volume 2, Privileged Specification version 20211203
+
+N: RV-ISA-PRIV
+A: rvpriv
+D: https://github.com/riscv/riscv-isa-manual/releases/download/Priv-v1.12/riscv-privileged-20211203.pdf
+
+#===== SD =====================================================================
+
+# Physical Layer Simplified Specification Version 9.00
+
+N: SD
+A: sd
+D: https://www.sdcard.org/cms/wp-content/themes/sdcard-org/dl.php?f=Part1_Physical_Layer_Simplified_Specification_Ver9.00.pdf
+
+# SDIO Simplified Specification Version 3.00 
+
+N: SDIO
+A: sdio
+D: https://www.sdcard.org/cms/wp-content/themes/sdcard-org/dl.php?f=PartE1_SDIO_Simplified_Specification_Ver3.00.pdf
+
+# SD Host Controller Simplified Specification Version 4.20
+
+N: SDHC
+A: sdhc
+D: https://www.sdcard.org/cms/wp-content/themes/sdcard-org/dl.php?f=PartA2_SD%20Host_Controller_Simplified_Specification_Ver4.20.pdf
