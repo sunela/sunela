@@ -72,14 +72,27 @@ N: BMA400-Freefall
 A: fall
 D: https://community.bosch-sensortec.com/varuj77995/attachments/varuj77995/bst_community-mems-forum/4402/1/How%20to%20generate%20freefall%20interrupt%20using%20BMA400.pdf
 
-#===== TI BQ21080 =============================================================
+#===== TI BQ2515x =============================================================
 
-# BQ21080 Linear Battery Charger
+# The BQ25157 may be the best match, but the differences are only minor.
 
-N: BQ21080
-A: bq21080
+# BQ25150/5/7 Linear Battery Charger family (with ADC and LDOs)
+
+N: BQ25150
+A: bq25150
+A: charger-ref
+A: charger-3rd
+D: https://www.ti.com/lit/ds/symlink/bq25150.pdf
+
+N: BQ25155
+A: bq25155
+A: charger-2nd
+D: https://www.ti.com/lit/ds/symlink/bq25155.pdf
+
+N: BQ25157
+A: bq25157
 A: charger
-D: https://www.ti.com/lit/ds/symlink/bq21080.pdf
+D: https://www.ti.com/lit/ds/symlink/bq25157.pdf
 
 #===== TI TLV759P =============================================================
 
@@ -118,26 +131,6 @@ N: CU3924SFSFDR003
 A: usbc-2nd
 A: usb-2nd
 D: https://media.digikey.com/pdf/Data%20Sheets/CUI%20Inc%20All%20Brands%20PDFs/CU39S03SA.pdf
-
-#===== High-side Load Switch ==================================================
-
-# GLF GLF112x (0.35 mm pitch, EN active-high)
-
-N: GLF112x
-A: GLF1121H
-A: GLF1123H
-A: glf1121h
-A: glf1123h
-A: loadsw
-D: https://glfipower.com/component/cck/?task=download&collection=upload_multiple&xi=0&file=upload_document&id=271
-
-# Toshiba TCK127BG (0.35 mm pitch, EN active-high)
-
-N: TCK127BG
-A: tck127bg
-A: loadsw-2nd
-D: https://toshiba.semicon-storage.com/info/docget.jsp?did=140423&prodName=TCK127BG
-#D: https://toshiba.semicon-storage.com/info/TCK127BG_datasheet_en_20211028.pdf
 
 #===== n-FET ==================================================================
 

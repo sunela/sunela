@@ -38,3 +38,10 @@ D: https://www.sdcard.org/cms/wp-content/themes/sdcard-org/dl.php?f=PartE1_SDIO_
 N: SDHC
 A: sdhc
 D: https://www.sdcard.org/cms/wp-content/themes/sdcard-org/dl.php?f=PartA2_SD%20Host_Controller_Simplified_Specification_Ver4.20.pdf
+
+#===== State of Charge Estimation =============================================
+
+N: SLUAAA1
+A: sluaaa1
+A: charge
+D: https://ti.com/lit/an/sluaaa1/sluaaa1.pdf

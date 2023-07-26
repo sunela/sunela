@@ -1,0 +1,48 @@
+#===== TI BQ21080 =============================================================
+
+# BQ21080 Linear Battery Charger
+
+N: BQ21080
+A: bq21080
+A: charger-old
+D: https://www.ti.com/lit/ds/symlink/bq21080.pdf
+
+#===== High-side Load Switch ==================================================
+
+# GLF GLF112x (0.35 mm pitch, EN active-high)
+
+N: GLF112x
+A: GLF1121H
+A: GLF1123H
+A: glf1121h
+A: glf1123h
+A: loadsw-old
+D: https://glfipower.com/component/cck/?task=download&collection=upload_multiple&xi=0&file=upload_document&id=271
+
+# Toshiba TCK127BG (0.35 mm pitch, EN active-high)
+
+N: TCK127BG
+A: tck127bg
+A: loadsw-2nd-old
+D: https://toshiba.semicon-storage.com/info/docget.jsp?did=140423&prodName=TCK127BG
+#D: https://toshiba.semicon-storage.com/info/TCK127BG_datasheet_en_20211028.pdf
+
+#===== Op amp =================================================================
+
+# TI TLV521
+
+N: TLV521
+A: opamp-old
+D: https://ti.com/lit/ds/symlink/tlv521.pdf
+
+# Microchip MCP6441
+
+N: MCP6441
+A: opamp-2nd-old
+D: https://ww1.microchip.com/downloads/en/DeviceDoc/22257C.pdf
+
+# TI LPV521
+
+N: LPV521
+A: opamp-3rd-old
+D: https://ti.com/lit/ds/symlink/lpv521.pdf
