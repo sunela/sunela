@@ -1,0 +1,67 @@
+#
+# BOOKSHELF.BL616 - Documentation related to the Bouffalo Labs BL616/618
+# chipset and boards using it.
+#
+# This work is licensed under Creative Commons CC-BY-4.0, see LICENSE.CC-BY for
+# more information.
+#
+
+#===== Bouffalo Labs ==========================================================
+
+# BL616/617 Data Sheet
+
+N: BL616DS
+A: BL618DS
+A: bl616ds
+A: bl618ds
+A: bl6ds
+D: https://github.com/bouffalolab/bl_docs/raw/main/BL616_DS/en/BL616_BL618_DS_1.5_en.pdf
+
+# BL616/BL618 Reference Manual
+
+N: BL616RM
+A: BL618RM
+A: bl616rm
+A: bl618rm
+A: bl6rm
+D: https://github.com/bouffalolab/bl_docs/raw/main/BL616_RM/en/BL616_BL618_RM_en_0.95.pdf
+
+#===== SiSpeed M0s (BL616) ====================================================
+
+N: M0s-DS
+A: m0sds
+A: m0ds
+D: https://dl.sipeed.com/fileList/Maix-Zero/M0S/M0S/1_Specification/Sipeed%20M0S%20DataSheet%20V1.1.pdf
+
+N: M0s-Schematic
+A: m0ssch
+A: m0sch
+D: https://dl.sipeed.com/fileList/Maix-Zero/M0S/M0S/2_Schematic/M0S_Schematic_V1.0.pdf
+
+N: M0s-Dock-DS
+A: m0sds
+A: m0dds
+D: https://dl.sipeed.com/fileList/Maix-Zero/M0S/M0S_Dock/1_Specification/Sipeed%20M0S%20Dock%20DataSheet%20V1.0.pdf
+
+N: M0s-Dock-Schematic
+A: m0sdsch
+A: m0dsch
+D: https://dl.sipeed.com/fileList/Maix-Zero/M0S/M0S_Dock/2_Schematic/M0S-Dock_Schematic_V1.0.pdf
+
+#===== SiSpeed M0p (BL618) ====================================================
+
+N: M0p-DS
+A: m0pds
+D: https://dl.sipeed.com/fileList/Maix-Zero/M0P/M0P/1_datasheet/Sipeed%20M0P%20DataSheet_V1.0.pdf
+
+N: M0p-Schematic
+A: m0psch
+D: https://dl.sipeed.com/fileList/Maix-Zero/M0P/M0P/2_Schematic/M0P_37501_schematic.pdf
+
+N: M0p-Dock-DS
+A: m0pdds
+D: https://dl.sipeed.com/fileList/Maix-Zero/M0P/M0P%20Dock/1_datasheet/Sipeed%20M0P%20Dock%20DataSheet_V1.0.pdf
+
+N: M0p-Dock-Schematic
+A: m0pdsch
+D: https://dl.sipeed.com/fileList/Maix-Zero/M0P/M0P%20Dock/2_Schematic/M0P_Dock_37520_Schematic.pdf
