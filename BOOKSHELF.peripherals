@@ -115,21 +115,38 @@ A: flash
 A: qspi
 D: https://www.macronix.com/Lists/Datasheet/Attachments/8868/MX25R6435F,%20Wide%20Range,%2064Mb,%20v1.6.pdf
 
-#===== USB-C receptacle =======================================================
+#===== USB-C receptacle (simple, top-mount)  ==================================
+
+# Amphenol GSB1C411101DS1HR USB-C Receptacle (top-mount, 16+8 contacts)
+
+N: GSB1C411101DS1HR
+A: usbc
+A: usb
+F: elinks
+D: https://cdn.amphenol-cs.com/media/wysiwyg/files/drawing/gsb1c41x1x1ds1hr.pdf
+
+# Assmann A-USBC-20F0-EA-GSR11
+
+N: SR11
+A: usbc-2nd
+A: usb-2nd
+D: https://www.assmann-wsw.com/uploads/datasheets/ASS_9230_CO.pdf
+
+#===== USB-C receptacle (complex, mid-mount)  =================================
 
 # Amphenol 10164986 USB-C Receptacle (mid-mount, full depth)
 
 N: 10164986
-A: usbc
-A: usb
+A: usbc-mid
+A: usb-mid
 F: elinks
 D: https://cdn.amphenol-cs.com/media/wysiwyg/files/drawing/10164986.pdf
 
 # Cvilux CU3924SFSFDR003-LF USB-C Receptacle (mid-mount, full depth)
 
 N: CU3924SFSFDR003
-A: usbc-2nd
-A: usb-2nd
+A: usbc-mid-2nd
+A: usb-mid-2nd
 D: https://media.digikey.com/pdf/Data%20Sheets/CUI%20Inc%20All%20Brands%20PDFs/CU39S03SA.pdf
 
 #===== n-FET ==================================================================

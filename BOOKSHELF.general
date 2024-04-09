@@ -45,3 +45,10 @@ N: SLUAAA1
 A: sluaaa1
 A: charge
 D: https://ti.com/lit/an/sluaaa1/sluaaa1.pdf
+
+#===== USB Type-C =============================================================
+
+N: USB-C
+A: usbc
+D: https://www.usb.org/sites/default/files/USB%20Type-C%202.2%20Release%2020230814.zip
+Z: USB Type-C 2.2 Release 20230814/USB Type-C Spec R2.2 - October 2022.pdf
