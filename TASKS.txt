@@ -1,0 +1,720 @@
+Make USB work with Android
+- On Android, the Sunela only produces a stream of resets, without enumerating
+- Try CherryUSB example to see if the problem is with our firmware or with
+  CherryUSB
+- If a fix can be found, try accessing the Web UI from a browser on the Android
+  device
+
+Change USB protocol to use bulk transfers
+- Reorganize the data path such that only small buffers are needed
+- Reset the stream if there is a problem
+- Adapt fw/tools/io.c accordingly
+
+Directory operations walk-through
+- Start from an empty simulated device and set up a directory tree with two
+  levels of directories, and at least one account entry in every directory.
+- Perform renaming and moving of entries and directories
+- Take screenshots using the fw/tests/pages.sh infrastructure (to avoid
+  overlaps, use a new script with test cases for this)
+- Arrange the screenshots into a "walk-through", similar to doc/pages.fig
+
+Set time
+- Implement manual setting of date, time, and time zone in Setup > Time & Date
+- Store the time zone setting in the configuration
+
+Key management (readers)
+- Add a new page Setup > Keys to manage reader keys (add, remove, enable,
+  disable)
+- Each reader key has a name and the key value. The name may be optional. (If
+  the implementation makes names optional, simply the key value should be shown
+  as name.)
+- Store reader keys in the configuration
+- Extend dbcrypt setup to include reader keys from the configuration
+- Add an indication if an entry that is to be written has a different set of
+  reader keys that the reader keys currently configured
+- Support re-creating entries with the current set of reader keys
+
+Key management (writers)
+- As a configuration option, support creating ephemeral writer keys
+- If an ephemeral key is used, no reader record for that key should be written,
+  but there should be a record for the device's secret key.
+
+User-settable writer key
+- Consider supporting, as a configuration option, setting the writer key for
+  account entries
+- Would such an option actually have relevant use cases ? How should the writer
+  key be stored ? E.g., just "plain" in the configuration record, or maybe as
+  XOR-pad for a key derived from the master secret ?
+
+Support multi-block records
+- We may need blocks with larger payloads than the current 564-916 bytes, e.g.,
+  if a block contains a lists of known (verified) cryptocurrency wallet
+  addresses.
+- Introduce a block type (extension blocks) to store payloads that exceed the
+  space available of a block.
+- We call a block extended this way a "long" block
+- A long block may use more than one extension block.
+- Extension blocks may be chained by pointers, or there may be a directory
+  (list) of extension blocks. A linked list may be more versatile.
+- When writing a long block, write the extension blocks first, then write the
+  long block and include the pointer/directory.
+- If a long block is updated, only free the extension blocks of the old long
+  block after all blocks of the new long block have been successfully written.
+- When reading, remember all extension blocks, and resolve all references to
+  extension blocks after the whole database has been read.
+- Consider the following error conditions:
+  - If a pointer points to a block that is not an extension block, the whole
+    chain is invalid.
+  - An extension block may have more than one other block pointing to it, but
+    only at most one such pointer can be valid.
+
+Support long fields
+- We may need fields with values larger than 256 bytes, e.g., for RSA keys.
+- Reserve field sizes >= 128 for long fields
+- The size of long fields is stored in two bytes, yielding a 15-bit number.
+- Alternatively, we could just make all field lengths 16 bits.
+
+Document security architecture
+- Introduce overall model, e.g., device secret stored in Efuses, code protected
+  against tampering by signing, less trusted code (applets) runs in a
+  "sandbox".
+- Introduce chip structure (Efuse, on-chip RAM, pSRAM, ROM, external Flash,
+  Secure Boot)
+- Introduce Secure Element (SE) and explain what it can and can't do.
+- SE stores additional secret that is part of master secret. Additional secret
+  never leaves the SE, and requires PIN to be applied. SE keeps track of
+  unsuccessful PIN attempts, and locks if too many.
+- Emphasize "practical security", i.e., safety from everyday threats. Admit
+  that very resourceful attackers (e.g., states) are likely to succeed,
+  possibly without even having to breach the cryptography.
+- Device is secure if no PIN is entered. All bets are off if a PIN is known to
+  the attacker.
+- Device supports multiple "parallel" PINs (each unlocking a different set of
+  blocks), maybe also "serial" PINs (more than one PIN required to reach a
+  given secret, e.g., one to unlock the device and low-value secrets, another
+  for the high-value secrets .)
+- Describe how we obtain and how we use the master secret.
+- Describe how database entries are structured and how they are encrypted.
+- Describe how secrets are stored in the database, e.g., master keys of
+  hardware wallets.
+- Discuss additional security features, e.g., the acceleration sensor, for
+  "drawer mode" and free fall / grab and snatch detection.
+- Discuss how the architecture supports deniability, privacy.
+
+Document user interface (for users)
+- Introduce the main concepts of the user interface
+- Show short sequences of user interaction for common tasks, e.g.,
+  - navigating the directory tree,
+  - creating new account entries and adding fields,
+  - editing and deleting fields,
+  - renaming account, deleting them,
+  - creating directories and moving accounts into them,
+  - explain the grey-out logic (operations that would have no effect, would
+    result in a name clash, or would create a cycle in the directory tree)
+- Describe how to communicate with a PC over USB, and how to use the Web UI
+- Use screenshots generated by fw/tests/pages.sh
+
+Support applets
+- Implement memory protection. References:
+  - Section 3.7 of
+    https://github.com/riscv/riscv-isa-manual/releases/download/riscv-isa-release-056b6ff-2023-10-02/priv-isa-asciidoc.pdf
+  - https://medium.com/@talktokarthikbk/risc-v-memory-protection-diving-deep-into-the-complexities-9d751212be6b
+  - BL808/BL618 RM
+  - drivers/lhal/include/arch/risc-v/t-head/rv_pmp.c
+- Define applet API
+- Ensure the applet has sufficient control over UI elements to be usable
+- Write an example applet (or convert existing functionality, e.g., HOTP/TOTP,
+  to an applet)
+- Test that the applet can't read or write outside its "sandbox"
+- Write more applets, and evolve the API if needed
+- Define a Flash region where applets are stored. Updating the firmware should
+  not normally require replacing the applets.
+- Support signing and dynamic loading of applets
+- Implement management for applet signing keys (have a default manufacturer
+  key, let users add their own keys, and let users remove keys, including the
+  manufacturer key)
+- Support enabling and disabling of applets
+
+Document how to make applets
+
+Support FIDO2 (2FA)
+- Find out what is needed for supporting FIDO2
+- Implement/integrate the cryptographic primitives used by FIDO2
+- Implement FIDO2 functionality, including communication
+- Do we also need U2F, FIDO2's predecessor ? See also
+  https://en.wikipedia.org/wiki/Universal_2nd_Factor#Specifications
+
+Support storing and using SSH keys
+- Are there any protocols specifically for keeping SSH keys on authentication
+  devices ? Or is everyone just using FIDO/FIDO2/etc. ?
+- If there are protocols not covered by other standards we want to implement,
+  implement them.
+
+Support storing PGP keys
+- Same items as for SSH keys
+
+Define and implement key storage for cyptocoins
+. There are several approaches to consider:
+  1) Derive the key directly from the device's master secret. The derivation
+     algorithm originating from Bitcoin is described in BIP32:
+     https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
+     BIP43 and BIP44 describe how to use BIP32 for other coins than Bitcoin:
+     https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki
+     https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
+     SLIP44 lists coin types and their encoding:
+     https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+     However, Ethereum seems to have come up with their own variant:
+     https://github.com/ethereum/ERCs/blob/master/ERCS/erc-601.md/
+  2) Store the secret key in an account record. This will work in all cases, no
+     matter how the key was generated.
+  3) Store a master secret, from which keys are derived (using BIP32 et al.)
+- Determine what Trezor and Ledger use
+- Implement approach 2).
+- Consider implementing approach 3), which would allow to "clone" Trezor,
+  Ledger, and possibly other wallets.
+
+Support signing ETH or ETC transactions
+- Implement/integrate underlying cryptographic primitives, e.g., secp256k1
+  https://en.bitcoin.it/wiki/Secp256k1
+  This implementation (under the MIT license) may be a good starting point
+  for secp256k1:
+  https://github.com/bitcoin-core/secp256k1
+- Define message exchange and message content for "remote control" protocol
+- Implement transaction visualization, key lookup, signing
+- Note that the remote peer should not be able to probe what keys are stored
+  on the device.
+- Test it with testnets, then real coins
+- Can we make this work with Trezor's Web App ?
+
+Apply the above support to the other of ETH/ETC
+
+Extend ETH/ETC support to ERC20 tokens
+
+Support signing BTC transactions
+
+Error handling 
+- Report database IO errors to the user
+- Review and, where needed, improve error handing
+- Consider recording errors
+
+Run the firmware under FreeRTOS
+- This is a prerequisite for using the Bluetooth stack
+- FreeRTOS is already part of the SDK
+- How does it interact with CherryUSB ?
+- Inter-process communication between CherryUSB and our firmware may need
+  rethinking.
+- For now, we can just run the firmware in a single FreeRTOS task, and keep our
+  own event loop.
+- Make any adaptations that may be needed for running under FreeRTOS (e.g.,
+  stack and memory organization may need to change)
+
+Make Bluetooth Low Energy work
+- Support pairing, data path
+- Adapt fw/tools/io.c to support the BTLE transport
+- Adapt the Web UI to support BTLE
+- Test all this in the browser
+
+Consider on-demand decryption
+- We currently decrypt all account records (that we can decrypt with the
+  current PIN), then store their content in memory
+- It might be safer to only store the name and ID, only only decrypt the
+  content when we want to access it
+- This way, it may even be possible to keep decrypted data to the on-chip RAM,
+  which is safer from being read by unauthorized parties than the pSRAM.
+- This may require the building of caches when fast lookups are needed, e.g.,
+  when a browser requests credentials for a certain account.
+
+Wipe buffers and other temporary copies
+- Whenever sensitive data is stored in a buffer, the buffer should be wiped as
+  soon as it is no longer needed.
+- Review the code for places where this isn't done, or where sensitive data can
+  be leaked, and fix it.
+
+Cache shared secrets
+- Generating a shared secret from a keypair is an expensive operation
+- Unless ephemeral writer keys are used, many records will be encrypted for the
+  same keypair
+- We should therefore cache shared secrets, keyed device's public key
+  (implicitly) and the writer's public key (explicitly), and try to find a
+  suitable shared secret in the cache, instead of calculating the shared
+  secret.
+
+Integration with browser authentication
+- Investigate how external password safes currently a) know when a Web page
+  requests a login, b) send the credentials to be entered in the login dialog.
+- Implement this for Sunela.
+- If we can use some well-established 3rd party software that operates with a
+  USB device, we may be able to just emulate this device, without having to
+  "tap" into login dialogs.
+- If browsers support 3rd party password safes through some API, we should use
+  it.
+
+Web UI: Implement directories (reading)
+- Recursively retrieve directory information
+- Show directories in the UI, and let the user open them, and access their
+  content
+
+Web UI: Implement directory operations (writing)
+- Change account entry name, change directory name. Note: don't allow name
+  changes that would lead to a name clash (multiple entries in the same
+  directory having the same name.)
+- Create directories (the Sunela UI has operations to change the type of an
+  entry between account and directory. This is mainly done to streamline user
+  interaction, considering the limitations of the device.  The Web UI does not
+  need to follow the same procedure.)
+- Delete empty directories.
+- Move directories. Note: 1) don't allow a move to create a name clash,
+  2) don't allow creating cycles in the directory tree (e.g., by moving a
+  directory into itself or into a subdirectory of itself)
+
+Remote control: Implement writing
+- The remote control protocol currently only supports read operations (with the
+  exception of setting the time)
+- Implement write operations, e.g., adding and removing of entries and fields,
+  and entering field values.
+- Every time a write is attempted, the Sunela device should ask for
+  confirmation. 
+
+Remote control: Confirmation of multiple writes
+- Database maintenance may sometimes require many related write operations.
+- Having to confirm every one of them may be tedious, and may encourage users
+  to just tap "Yes" without even looking at what is being requested.
+- Find a way to group related writes such that a) only a single acknowledgement
+  is needed, and b) the Sunela device ensures that only operations related to
+  what has been permitted by the user are performed.
+- Example: multiple changes to an account entry may be combined as "update
+  entry XXX". In this case, the firmware has to ensure all the individual
+  writes pertain to entry XXX.
+- Such behaviour could be obtained by introducing explicit "bundling" of
+  operations, but the Sunela firmware could also buffer incoming requests, look
+  for patterns, and then build groups from the individual operations.
+
+Web UI: Implement writing
+- Let the user create new entry names, fields, and field values.
+- Likewise, support editing of existing names and values.
+- Likewise, support removal.
+- Use suitable encodings for binary data, e.g., wallet addresses.
+
+Web UI: Support entering of HOTP/TOTP secrets
+- HOTP/TOTP secrets are often communicated with a QR code
+- The QR code translates to a URI that contains the base32-encoded secret
+- We should support at least extracting the base32-encoded secret when the
+  user enters a HOTP/TOTP URI (in the corresponding field)
+
+Database, Remote control protocol, Web UI:
+- HOTP/TOTP URIs can contain parameters, like the HOTP counter, the TOTP
+  period, or the number of digits. See also
+  https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+- We should support such parameters (for now, we just use the defaults, which
+  is what everyone seems to do anyway)
+- This requires: 1) storing them in the database, 2) using them as appropriate
+  on the Sunela device, 3) having the possibility to view and edit them on the
+  Sunela device, 4) exchanging them over the remote control protocol, 5)
+  displaying them in the Web UI, possibly with the ability to edit them, and
+  6) extracting them from HOTP/TOTP URIs.
+
+Web UI: Make prettier
+- The Web UI is visually primitive and the colors are ugly
+- Make it look better
+- Note: we should avoid the use of frameworks to avoid depending on a large 3rd
+  party code base.
+
+Graphics: Support compositing of fonts from multiple sources
+- We currently only support converting character ranges from a single font
+- We use Liberation Mono:bold:slant=0 in different sizes
+- There are some character, e.g., the visible space, U+2423, that are not 
+  in Liberation Mono
+  http://xahlee.info/comp/unicode_whitespace.html
+- FreeSansBold may be a suitable source. For the complete list of fonts that
+  have U_2423, run
+  find /usr/share/fonts/truetype/ -name \*.ttf \
+    exec sh -c "otf2bdf {} | sed '/ENCODING 2423$/{s|.*|{}|;s|.*/||p};d'" \;
+- Support combining characters from multiple source fonts in a single bitmap
+  font for the device.
+- Note: an alternative would be to support switching fonts within a string, see
+  below.
+
+UI: For text entry, show a non-blank space character symbol on the keypad
+- In the text entry keypad, "0" -> 7 currently shows a blank
+- We should show a non-blank symbol, e.g., U-2423 (see above)
+- This could be accomplished in several ways:
+  1) Include the U+2423 character in our standard font (see above)
+  2) Support switching fonts in the same string, or looking up characters in
+     multiple fonts.
+  3) Handle this as a special case only for text entry.
+- This may require first implementing partial UTF-8 support (see below)
+
+Support UTF-8 characters
+- The text rendering functions should support UTF-8 characters
+- String operations, especially things using strlen(), have to be checked for
+  UTF-8 compatibility. (For example, concatenation of names into paths of entry
+  IDs in fw/db/db.c)
+- Text entry will need a 3rd level for non-ASCII characters. E.g., there could
+  be a "accent-shift" function in the (currently empty) position of the right
+  arrow ("accept") on the 2nd level. If accent-shift is active when a character
+  is selected, the 3rd level would activate, showing accented variants and
+  related characters (e.g., the Nordic "ae" character could be in among the "A"
+  options.)
+- Some letters may have more than ten accented and derived variants. We could
+  use the "accept" button to switch between pages of UTF-8 glyphs associated
+  with a given letter.
+
+Highlight mixed localization
+- Strings obtained from untrusted sources may contain UTF-8 characters that
+  look like a different character. This may be used for attacks, e.g., to
+  construct URLs that lead to malicious sites.
+- We may want to highlight, as a warning, non-ASCII characters in strings that
+  contain "local" characters from more than one region, or from a region that
+  is different from a user-configured setting.
+- We may also want to highlight, as a less severe indication, the use of any
+  non-ASCII characters.
+
+fw/db/db.c has gotten large and complex
+- Try to break it into smaller parts
+- See if there are redundancies that could be removed
+
+USB HID for typing
+- The Sunela device should be able to act as HID (Human Input Device) USB
+  device, to input strings from account records without the user having to type
+  them.
+- The user should be able to configure:
+  - Whether the device should act as USB keyboard at all (it may still act as
+    HID, in case HID is used as a transport for other protocols)
+  - Which fields can be "typed", and which fields can only be accessed by other
+    means (e.g., there is probably no reason to allow "typing" of a TOTP secret
+    or an ETH secret key)
+  - Optionally, if some fields should be typed together, e.g., username, Tab,
+    password.
+- Typing should require the user to initiate the operation.
+- If may be prudent to not send an Enter at the end of typing, to give the user
+  a chance to avoid sending things that have been "typed" at the wrong place.
+  (Needs evaluation.)
+
+BTLE HID for typing
+- Like above, but for BTLE.
+- Resources:
+  https://www.bluetooth.com/specifications/specs/hid-over-gatt-profile-1-0/
+  https://docs.silabs.com/bluetooth/2.13/bluetooth-code-examples-applications/ble-hid-keyboard
+  
+Select button MCU
+- At least during development, the firmware will rash often, requiring a
+  hardware reset. Also during development, firmware updates will be frequent,
+  it may be a while before we have an update process fully under our own
+  control.
+- We want a dedicated small MCU to generate nRESET and BOOT signals from the
+  single button, so that users can perform resets and updates without needing
+  to open the device and attach a fixture board. (See below.)
+- So far, we have looked at the following choices:
+  - STC Micro STC8G1K08A (8051, 8-DFN 3x3 mm)
+    https://www.stcmicro.com/datasheet/STC8G-en.pdf
+  - SiLabs C8051F524 (8051, 10-DFN 3x3 mm)
+  - STM STM32C011F4 (Cortex M0+, UFQFPN-20 3x3 mm)
+  - WCH CH32V003F4U6 (RV32EC, QFN-20, 3x3 mm)
+    https://www.wch-ic.com/products/CH32V003.html
+    1-wire Serial Debug Interface (SDI):
+    https://github.com/openwch/ch32v003/blob/main/RISC-V%20QingKeV2%20Microprocessor%20Debug%20Manual.pdf
+    https://hw-by-design.blogspot.com/2024/04/ch32v003-tidbits.html
+  CH32V would have the benefit of having the same overall architecture (RV32)
+  as the Soc.
+
+Design button circuit
+- It must be possible to program the button MCU in-circuit, with the firmware
+  of the SoC (BL618) in any state. The programming fixture may hold the SoC in
+  reset while programming the MCU.
+- The button connects to the MCU, signal BUTTON.
+- The MCU has three output signals, all open-drain:
+  - BUTTON_SOC (tracks BUTTON closely)
+  - nRESET
+  - BOOT
+- There is an optional bypass from BUTTON to BUTTON_SOC, e.g., for use in
+  development, when the MCU is not yet ready to perform all its tasks.
+
+Develop firmware for button MCU
+- The button MCU should monitor the BUTTON signal and:
+  - mirror the state of BUTTON on BUTTON_SOC
+  - generate a reset pulse on nRESET with BOOT = 0 if BUTTON goes high after
+    having been low continuously for Trst_min <= t <= Trst_max.
+  - generate a reset pulse on nRESET with BOOT = 1 if BUTTON was low for
+    Tboot_l_min <= t <= Tboot_l_max, was high for
+    Tboot_h_min <= t <= Tboot_h_max, and went low again for at least Tboot_rst
+- tentatively parameter choices:
+  Trst_min = 10 s, Trst_max = 15 s
+  Tboot_l_min = 5 s, Tboot_l_max = 8 s
+  Tboot_h_min = 0.1 s, Tboot_h_max = 2 s
+  Tboot_rst = 3 s
+
+Add visual feedback for button reset sequences
+- The firmware running on the SoC should monitor the button, and, if detecting
+  a long press, e.g., for t > 2 s, cancel all current activity, and display a
+  visual indication of the count-down until Trst_min and Trst_min + Trst_max.
+- The firmware may also interpret and visualize the Tboot_* sequence.
+- If a long press does not lead to a reset, i.e., if none of the patterns
+  recognized by the MCU is entered, the firmware should enter standby.
+- The firmware may activate the display and show some reset indication after a
+  hardware reset, in order to show a user-visible difference between a reset
+  and standby.
+
+Firmware upgrade
+- Implement a boot loader that supports replacing the firmware and/or applets,
+  but does not give access to the account database.
+- The boot loader may support erasing the entire account database, if
+  requested.
+- The boot loader must not accept firmware that is not correctly signed. (It
+  may allow transferring it, but it may only be made fully executable after the
+  signature has been checked.)
+- It must be impossible to "brick" the device by installing broken or
+  incomplete firmware. Unbrickability can be achieved by either allowing use of
+  the USB boot (ROM) or by having a protected first-stage boot loader of our
+  design that that can Flash new firmware.
+- It should not be possible to downgrade the firmware without entering a
+  correct PIN. (Else, if a security flaw is found the firmware, an attacker
+  could downgrade to that version in order to be able to exploit the flaw.)
+- If a simple firmware download different from Bouffalo's in-circuit
+  programming protocol and the remote control protocol is needed, DFU should be
+  considered.
+
+Design fixture board
+- For development and production testing, we will need a test fixture with some
+  electronics
+- The PCB of the device brings out various contact pads at the bottom, under
+  or around the battery, where the test fixture can connect with pogo pins.
+- It should be able to supply power to USB and at the battery terminals (a
+  battery may or may not be present(, possibly also the 3V3 rail.
+- It should be able to measure the current going into rails being powered from
+  the fixture, to detect anomalies.
+- Likewise, it should support monitoring of the voltages of power rails.
+- It should be able to load the 3V3 and 1V8 rails, with constant or
+  (preferable) programmable loads.
+- It should have a USB interface towards a control station (PC).
+- It should connect to all signals needed for in-circuit programming of the SoC
+  and the button MCU.
+- It should give access to the serial console of the device under test (DUT),
+  through USB.
+- If may give access to further signals, such as I2C or the button.
+
+Nostr signing device
+- The Nostr protocol supports signing of messages. Sunela should
+  - be able to sign outgoing messages,
+  - maintain a registry of known peers, and
+  - be able to verify the signatures on messages supposedly sent by known
+    peers.
+- NIP-07 defines a browser API for external signing devices:
+  https://github.com/nostr-protocol/nips/blob/master/07.md
+- Signing devices already exist:
+  https://github.com/lnbits/nostr-signing-device
+  https://github.com/lnbits/horse
+- Related information:
+  NIP-01 defines rhe basic protocol:
+  https://github.com/nostr-protocol/nips/blob/master/01.md
+- BIP-340 defines Schnorr Signatures for secp256k1, which are also used by
+  Nostr:
+  https://bips.xyz/340
+
+Support Firefox
+- The current Web UI depends on features found on Chrome, e.g., WebUSB.
+- Can we also do something with Firefox, possibly with extensions or an
+  external program ?
+- If yes, design and implement it.
+- If sufficiently open interfaces for 3rd part software, e.g., Trezor or
+  Ledger, exist, we may try to use them.
+
+Support Apple
+- The Apple ecosystem comes with its own tools and rules
+- Can we support Sunela in ways similar to what is possible with Chrome and
+  Android ?
+- If yes, design and implement it.
+- If sufficiently open interfaces for 3rd part software, e.g., Trezor or
+  Ledger, exist, we may try to use them.
+
+Fix USB hang
+- If receiving unexpected transfers, the USB stack can easily go into a busy
+  loop, hanging the device until reset.
+- This happens for example if trying to use the remote control protocol before
+  the user has activated it on the device.
+- Find out whether this is a bug in CherryUSB or in how we use it.
+- Fix it.
+
+UI coloring
+- When showing the content of account entries, the UI draws constant strings,
+  like field names, in white, variable content, e.g., field values, in yellow.
+- We use yellow for user-defined text on some other occasions, e.g., the title
+  of account entry pages,
+- but we don't do this consistently. E.g. the Setup > Time & Date does not use
+  yellow.
+- Evaluate whether it makes sense to extend the use of yellow for variable
+  information.
+- Implement the coloring scheme we decide makes the most sense.
+
+Use Efuses
+- The 4 kbit Efuses (one-time programmable persistent on-chip memory) store:
+  - AES and signing keys for "Secure Boot" (see below)
+  - Calibration / trim and similar parameters. See, for example,
+    bouffalo_sdk/drivers/soc/bl808/std/src/bl808_ef_cfg.c
+- We want to store:
+  - Device secrets
+  - Public keys of authorized firmware signers
+- There should be N device secret locations. Each secret has a size of 256
+  bits. Unused secrets should be 0xff (unprogrammed) revoked or disabled
+  secrets should be 0x00 (all bits irreversibly programmed). Anything else may
+  be is a valid secret.
+- Define the Efuse layout and the maximum number of secrets and signing keys.
+- Program and use Efuses to store device secrets.
+
+Secure boot
+- The Bouffalo chips implement a "Secure Boot" with AES-encrypted signed
+  firmware.
+  [ find reference ]
+- We need signing to ensure the integrity of the firmware, given that at least
+  part of it has to run in machine (M) mode, and thus has access to the Efuses
+  storing the device secret. Malicious firmware could exfiltrate such sensitive
+  information.
+- Find out how signing works, and implement it. Note that the corresponding
+  secrets are stored in Efuses, and cannot be reset. Failed attempts to set up
+  Secure Boot may therefore result in the whole SoC to become unusable.
+
+Signed firmware
+- We want to be able to support key revocation and the introduction of new
+  keys (e.g., to enable multiple trusted sources.)
+- Users should be able to develop (and thus sign) their own firmware, and they
+  may accept firmware signed by 3rd parties they choose to trust.
+- The Efuses-bases "Secure Boot" is likely to be too limited to support all the
+  above. We may therefore need a first-stage boot loader that then accesses
+  keys stored in Flash, and loads the main firmware and applets.
+- Define and implement this architecture.
+
+Secure Element
+- We use an ATECC608B Secure Element
+  https://ww1.microchip.com/downloads/aemDocuments/documents/SCBU/ProductDocuments/DataSheets/ATECC608B-CryptoAuthentication-Device-Summary-Data-Sheet-DS40002239B.pdf
+- The SE can store secrets and perform certain operations with them. For
+  example, it can count PIN entry attempts, and lock the device after too
+  many incorrect attempts:
+  https://ww1.microchip.com/downloads/en/Appnotes/Atmel-8863-CryptoAuth-Authentication-Counting-ApplicationNote.pdf
+- Note that most sources have only the "summary data sheet", which is not
+  sufficient for development. This is the complete version:
+  https://cdn.sparkfun.com/assets/learn_tutorials/1/0/0/3/Microchip_ATECC508A_Datasheet.pdf
+- More resources:
+  https://learn.sparkfun.com/tutorials/cryptographic-co-processor-atecc508a-qwiic-hookup-guide/all
+  https://www.instructables.com/Secure-Communication-Arduino/
+  https://raw.githubusercontent.com/Coldcard/firmware/master/docs/pin-entry.md
+- We already have low-level code to communicate with the ATECC608B:
+  https://github.com/wpwrak/bl808/blob/master/bare/lead/atecc.c
+- Things to do:
+  - Connect the Secure Element sensor to a development board. (Ideally, this
+    would be our own PCB, but a development board may work as interim
+    solution.)
+  - Integrate the ATECC608B driver (and the Secure Element API) into the Sunela
+     firmware.
+  - Set up the SE to perform the following operation:
+    - Input is:
+      - the PIN,
+      - a one-time pad, and
+      - a pattern derived from the device secret
+    - If the PIN is incorrect, increment the bad login counter
+    - Try to implement some rate control for PIN attempts. If this is not
+      possible, limit the total number of failed attempts, and permanently lock
+      the device if the limit is exceeded.
+    - If the PIN is correct, return a pattern that depends on the one-time pad
+      and the secret stored in the SE, and that is encrypted such that it can
+      only be decrypted by someone knowing the device secret.
+  - Support PIN changes.
+- The above protocol is a tentative design. There may be room for improvement,
+  and not all the steps outlined may be supported by the SE.
+- Note that the ATECC series SE needs to be "locked" for most operations. Once
+  locked, it cannot be unlocked, and if any change is needed to the implemented
+  protocol, a new SE chip has to be used.
+
+Use the acceleration sensor
+- We plan to have an acceleration sensor in the device
+- It can be used to 1) detect abrupt movement (grab and snatch), and lock the
+  device, 2) detect free fall, and lock the device, 3) implement "drawer mode"
+  there the device will enter a deep (possibly permanent) lock state after
+  being moved, if a correct PIN is not entered within a certain amount of time.
+- We already have low-level code to obtain samples from the BMA400:
+  https://github.com/wpwrak/bl808/blob/master/bare/lead/bma400.c
+- Things to do:
+  - Connect the acceleration sensor to a development board. (Ideally, this
+    would be our own PCB, but a development board may work as interim
+    solution.)
+  - Integrate the BMA400 driver (and the acceleration sensor API) into the
+    Sunela firmware.
+  - Add a simple demo application for R&D, e.g., a spirit level.
+  - Implement detection of free fall and abrupt movement, both turning the
+    device off (if on).
+  - Implement drawer mode.
+  - Power saving in standby.
+
+Random password generation
+- Sunela should be able to assist generation of high-quality passwords.
+- One difficulty is that different sites have different requirements regarding
+  password length and composition.
+- A straightforward way to support such requirements would be to have inputs
+  for character sets, e.g., [a-z], [A-Z], [0-9], set of special characters,
+  from which a character is chosen randomly. If the user is not happy with a
+  choice, they can delete the character(s) chosen, and try again.
+- Consider also having the option to choose specific characters using the
+  existing text entry method.
+
+Backlight PWM
+- The backlight is currently either off or 100% lit.
+- We should make the backlight brightness adjustable (in Setup > ...), and
+  control the LED with PWM.
+
+Consider supporting multiple languages
+- The user interface currently uses English or pictographs. For users not
+  speaking English, this may be undesirable.
+- Considerations:
+  + May help to lower the learning curve.
+  - Terminology may not be universally and consistently established in
+    non-English languages, and translations may result in confusion. (This
+    could be remedied by not translating technical expressions.)
+  - May require substantial infrastructure work, e.g., if variable strings
+    affect other words, such as "a/an X", "un/une X", etc.
+  - Formatting that currently fits in the available space and aligns well, may
+    need further work for non-English texts. Also, all places where text is
+    shown have to be tested for each new language.
+  - Would require UTF-8 support as a prerequisite.
+
+Support passkeys
+- Passkeys are end-to-end authentication credentials used between a sign-in
+  device (e.g., Sunela) and apps or Web sites. More details can be found here:
+  https://fidoalliance.org/passkeys/
+- Determine which protocols need to be implemented for  Sunela to support
+  passkeys.
+- Determine how to make browsers and apps use Sunela for authentication with
+  passkeys.
+- Define what information (secrets and other) needs to be stored in account
+  records used for passkeys.
+- Implement and test the above.
+
+Fix graphics rounding errors
+- Some graphics, e.g., overlay symbols, use calculated geometries that may be
+  affected by rounding differences. E.g., the walls of a rectangle with X
+  coordinates S * 0 and S * 1.0, and an inner rectangle at S * 0.1 and S * 0.9
+  may be different after rounding.
+- Instead, we should calculate the wall width explicitly, and use coordinates
+  0, W - 1, S - W, S - 1 (or something corresponding).
+
+Use optimized implementation of Curve25519
+- For many of the core cryptographic functions we use the NaCl library, which
+  contains Curve25519, related cryptographic primitives, and higher-level
+  constructs like "cryptobox".
+  https://nacl.cr.yp.to/
+- We currently use the TweetNaCl implementation of NaCl:
+  https://tweetnacl.cr.yp.to/
+- There is a RISC-V implementation of NaCl that optimizes some of the
+  cryptographic functions:
+  https://github.com/stefanberg96/NaCl-RISC-V
+  https://research.tue.nl/en/studentTheses/risc-v-implementation-of-the-nacl-library
+  (We can consider this an "official" implementation - Tanja Lange, one of the
+  thesis supervisors, is also a co-creator of NaCl.)
+
+Replace polyline
+- The polyline-drawing function (fw/gfx/poly.c) is ugly and does not have
+  clearly specified semantics (e.g., whether edges are always drawn exactly the
+  same, or whether that depends on context.
+- For example, line width varies in the outline of a pencil in the edit icon
+  (fw/ui/ui_overlay.c:ui_overlay_sym_edit, using fw/gfx/shape.c:gfx_pencil_sym)
+- poly.c is licensed under the Mozilla Public License. It is the only piece of
+  the firmware under this license. It would be better to replace it with code
+  that is under the MIT license, like most of the rest of the firmware.
+- Clean this up
