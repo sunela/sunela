@@ -20,10 +20,11 @@ This repository contains mainly reference material. The software and design
 files are in additional repositories that should be extracted under this
 repository:
 
-  sunela/	The repository
-    sunela/fw	Firmware (core system, application)
-    sunela/hw	Hardware design files (schematics, layout)
-    sunela/me	Mechanical design (CAD drawings, etc.)
+  sunela/		This repository
+    sunela/fw		Firmware (core system, application)
+    sunela/hw		Hardware design files (schematics, layout)
+    sunela/me		Mechanical design (CAD drawings, etc.)
+    sunela/webui	Web User Interface (runs in a browser)
 
 Files in this repositories are licensed under the MIT license or under Creative
 Commons CC-BY-4.0. Which license applies is indicated at the beginning of each
