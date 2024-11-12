@@ -46,3 +46,14 @@ D: https://ww1.microchip.com/downloads/en/DeviceDoc/22257C.pdf
 N: LPV521
 A: opamp-3rd-old
 D: https://ti.com/lit/ds/symlink/lpv521.pdf
+
+#===== TI TLV759P =============================================================
+
+# TLV759P Voltage Regulator
+
+N: TLV759P
+A: TLV759
+A: tlv759P
+A: vreg-old
+A: ldo-old
+D: https://www.ti.com/lit/ds/symlink/tlv759p.pdf

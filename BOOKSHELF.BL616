@@ -65,3 +65,17 @@ D: https://dl.sipeed.com/fileList/Maix-Zero/M0P/M0P%20Dock/1_datasheet/Sipeed%20
 N: M0p-Dock-Schematic
 A: m0pdsch
 D: https://dl.sipeed.com/fileList/Maix-Zero/M0P/M0P%20Dock/2_Schematic/M0P_Dock_37520_Schematic.pdf
+
+#===== Ai-Thinker M61 series ==================================================
+
+N: Ai-M61-01
+A: m61-01
+D: https://docs.ai-thinker.com/_media/en/ai-m61-01_v1.1.0_specification-20230413.pdf
+
+N: Ai-M61-32S
+A: m61-32s
+D: https://docs.ai-thinker.com/_media/en/ai-m61-32s_v1.1.0_specification-20230316.pdf
+
+N: Ai-M61-32SU
+A: m61-32su
+D: https://docs.ai-thinker.com/_media/en/ai-m61-32su_v1.0.0_specification-20230404.pdf

@@ -37,6 +37,12 @@ A: touch
 #D: https://www.buydisplay.com/download/ic/DS-CST816S_DS_V1.3.pdf
 D: https://www.waveshare.com/w/upload/5/51/CST816S_Datasheet_EN.pdf
 
+# CST816S-Regs
+A: cst816sregs
+A: cst816regs
+A: touchregs
+D: https://www.waveshare.com/w/upload/c/c2/CST816S_register_declaration.pdf
+
 #===== Microchip ATECC608B ====================================================
 
 N: ATECC608B
@@ -55,7 +61,8 @@ D: https://ww1.microchip.com/downloads/en/Appnotes/Atmel-8863-CryptoAuth-Authent
 N: ATECC508A-CDS
 A: atecc508a-cds
 A: mcsec
-D: https://content.arduino.cc/assets/mkr-microchip_atecc508a_cryptoauthentication_device_summary_datasheet-20005927a.pdf
+#D: https://content.arduino.cc/assets/mkr-microchip_atecc508a_cryptoauthentication_device_summary_datasheet-20005927a.pdf
+D: https://cdn.sparkfun.com/assets/learn_tutorials/1/0/0/3/Microchip_ATECC508A_Datasheet.pdf
 
 #===== Bosch BMA400 ===========================================================
 
@@ -72,48 +79,102 @@ N: BMA400-Freefall
 A: fall
 D: https://community.bosch-sensortec.com/varuj77995/attachments/varuj77995/bst_community-mems-forum/4402/1/How%20to%20generate%20freefall%20interrupt%20using%20BMA400.pdf
 
-#===== TI BQ2515x =============================================================
+#===== Linear LTC4054 =========================================================
 
-# The BQ25157 may be the best match, but the differences are only minor.
+# LTC4054-4.2/LTC4054X-4.2 Standalone Linear Li-Ion Battery Charger
 
-# BQ25150/5/7 Linear Battery Charger family (with ADC and LDOs)
-
-N: BQ25150
-A: bq25150
-A: charger-ref
-A: charger-3rd
-D: https://www.ti.com/lit/ds/symlink/bq25150.pdf
-
-N: BQ25155
-A: bq25155
-A: charger-2nd
-D: https://www.ti.com/lit/ds/symlink/bq25155.pdf
-
-N: BQ25157
-A: bq25157
+N: LTC4054
+A: ltc4054
 A: charger
-D: https://www.ti.com/lit/ds/symlink/bq25157.pdf
+D: https://www.analog.com/media/en/technical-documentation/data-sheets/405442xf.pdf
 
-#===== TI TLV759P =============================================================
+N: TP4054
+A: TP4054-EVVO
+A: tp4054-evvo
+A: charger-2nd
+D: https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/6128/TP4054-5272.pdf
 
-# TLV759P Voltage Regulator
+N: TP4054-UMN
+A: tp4054-umn
+A: charger-3rd
+D: https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/5014/TP4054.pdf
 
-N: TLV759P
-A: TLV759
-A: tlv759P
+#===== LDO ====================================================================
+
+# TLV758P Voltage Regulator
+
+N: TLV758P
+A: TLV758
+A: tlv758P
 A: vreg
 A: ldo
-D: https://www.ti.com/lit/ds/symlink/tlv759p.pdf
+D: https://ti.com/lit/ds/symlink/tlv758p.pdf
+
+#===== DCDC ===================================================================
+
+# TLV62568 1-A High Efficiency Synchronous Buck Converter in SOT Package
+
+N: TLV62568
+A: tlv62568
+A: dcdc
+D: ti.com/lit/ds/symlink/tlv62568.pdf
+
+# M3406 1.5MHz, 800mA Synchronous Step-Down Converter
+
+N: M3406
+A: m3406
+A: dcdc-2nd
+D: https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_XI-AN-Aerosemi-Tech-M3406-ADJ_C83224.pdf
+
+#===== POR ====================================================================
+
+# APX803S 3-PIN MICROPROCESSOR RESET CIRCUIT
+
+N: APX803S
+A: apx803s
+A: por
+D: https://www.diodes.com/assets/Datasheets/APX803S.pdf
+
+# @@@ many alternatives
+
+#===== Button Reset ===========================================================
+
+# TPS342x Low-Power, Push-Button Controllers
+
+N: TPS342
+A: TPS3421
+A: TPS3422
+A: tps342
+A: tps3421
+A: tps3422
+A: reset
+D: https://ti.com/lit/ds/symlink/tps3421.pdf
 
 #===== QSPI Flash =============================================================
 
-# Macronix MX25R6435F QSPI Flash
+# Macronix MX25U6432F QSPI Flash
 
-N: MX25R6435F
-A: mx25r6435f
+N: MX25U6432F
+A: mx25u6432f
 A: flash
 A: qspi
-D: https://www.macronix.com/Lists/Datasheet/Attachments/8868/MX25R6435F,%20Wide%20Range,%2064Mb,%20v1.6.pdf
+D: https://www.macronix.com/Lists/Datasheet/Attachments/8904/MX25U6432F,%201.8V,%2064Mb,%20v1.1.pdf
+
+# Winbond W25Q64JW QSPI Flash
+
+N: W25Q64JW
+A: w25q64jw
+A: flash-2nd
+A: qspi-2nd
+D: https://www.winbond.com/resource-files/W25Q64JW%20RevB%2011042019.pdf
+
+# ISSI IS25WP064A QSPI Flash
+
+N: IS25WP064A
+A: is25wp064a
+A: flash-3rd
+A: qspi-3rd
+D: https://www.issi.com/WW/pdf/IS25WP064A_032A.pdf
 
 #===== USB-C receptacle (simple, top-mount)  ==================================
 
@@ -158,6 +219,16 @@ A: dmg1012t
 A: n-FET
 A: nfet
 D: https://www.diodes.com/assets/Datasheets/DMG1012T.pdf
+
+#===== p-FET ==================================================================
+
+# Diodes DMG1012T (p-FET SOT-523)
+
+N: DMG1013T
+A: dmg1013t
+A: p-FET
+A: pfet
+D: https://www.diodes.com/assets/Datasheets/ds31784.pdf
 
 #===== FPC connector (0.5 mm, bottom contacts) ================================
 
