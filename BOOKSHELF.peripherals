@@ -126,30 +126,6 @@ A: m3406
 A: dcdc-2nd
 D: https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_XI-AN-Aerosemi-Tech-M3406-ADJ_C83224.pdf
 
-#===== POR ====================================================================
-
-# APX803S 3-PIN MICROPROCESSOR RESET CIRCUIT
-
-N: APX803S
-A: apx803s
-A: por
-D: https://www.diodes.com/assets/Datasheets/APX803S.pdf
-
-# @@@ many alternatives
-
-#===== Button Reset ===========================================================
-
-# TPS342x Low-Power, Push-Button Controllers
-
-N: TPS342
-A: TPS3421
-A: TPS3422
-A: tps342
-A: tps3421
-A: tps3422
-A: reset
-D: https://ti.com/lit/ds/symlink/tps3421.pdf
-
 #===== QSPI Flash =============================================================
 
 # Macronix MX25U6432F QSPI Flash
